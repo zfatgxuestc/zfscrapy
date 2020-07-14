@@ -1,0 +1,14 @@
+作者：王德明
+链接：https://www.zhihu.com/question/37915964/answer/74173035
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+settings.py 加入以下设置，$projectname 替换掉DOWNLOADER_MIDDLEWARES = {
+    '$projectname.mydownloader.MyDownloader': 543,
+}定义一个MyDownloader类，简单粗暴的调用wget进行下载，具体Popen优化之类的请自行处理import subprocess
+import scrapy
+class MyDownloader(object):
+    def process_request(self, request, spider):
+        if request.url.endswith(".zip"):
+            subprocess.Popen(["wget", request.url, "-P", "~/temp"])
+            return scrapy.http.HtmlResponse(url="", body="", encoding='utf8') # 随便返回一个response对象，阻止其他midllware的 process_request方法继续运行，raise IgnoreRequest 也可以
